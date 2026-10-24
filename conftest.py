@@ -3,6 +3,7 @@ import pytest
 from playwright.sync_api import Page
 
 from config import settings
+from pages.book_details_page import BookDetailsPage
 from pages.home_page import HomePage
 
 
@@ -17,3 +18,6 @@ def configure_timeouts(page: Page) -> None:
 def home_page(page: Page) -> HomePage:
     """Provide a HomePage object (a fresh page per test)."""
     return HomePage(page)
+@pytest.fixture
+def book_details_page(page: Page) -> BookDetailsPage:
+    return BookDetailsPage(page)
