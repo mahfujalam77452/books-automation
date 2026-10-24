@@ -3,7 +3,7 @@ from __future__ import annotations
 from playwright.sync_api import Page, Response
 from config import settings
 from pages.base_page import BasePage
-
+import random
 
 class HomePage(BasePage):
     def __init__(self, page: Page) -> None:
@@ -16,6 +16,10 @@ class HomePage(BasePage):
     def open_home(self) -> Response | None:
         """Open the homepage."""
         return self.open(settings.HOME_URL)
+    
+    def wait_for_books(self) -> None:
+        """Wait until the first book is visible."""
+        self.book_items.first.wait_for(state="visible")
 
     def get_visible_headings(self) -> list[tuple[str, str]]:
         """
@@ -34,3 +38,20 @@ class HomePage(BasePage):
     def get_book_count(self) -> int:
         """Return the number of books displayed on the homepage."""
         return self.book_items.count()
+    def get_random_book_indexes(self, count: int) -> list[int]:
+        """Return `count` different random book positions (0-based)."""
+        total = self.get_book_count()
+        return random.sample(range(total), min(count, total))
+
+    def get_book_title(self, index: int) -> str:
+        """Return the full book title (the visible text is shortened with '...')."""
+        link = self.book_items.nth(index).locator("h3 a")
+        return link.get_attribute("title").strip()
+
+    def get_book_price(self, index: int) -> str:
+        """Return the price text, e.g. '£51.77'."""
+        return self.book_items.nth(index).locator("p.price_color").inner_text().strip()
+
+    def click_book(self, index: int) -> None:
+        """Click the book at the given position."""
+        self.book_items.nth(index).locator("h3 a").click()
