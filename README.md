@@ -38,7 +38,7 @@ an HTML report and an Allure report.
 ## Installation Guide
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/mahfujalam77452/books-automation
 cd books-automation
 
 python -m venv venv
@@ -64,8 +64,6 @@ playwright install chromium
 | All automatic tests (headless) | `pytest -m "not manual"` |
 | Everything incl. manual login (visible browser) | `pytest --headed` |
 | One file | `pytest tests/test_homepage.py` |
-| Smoke tests only | `pytest -m smoke` |
-| Regression tests only | `pytest -m regression` |
 | Mobile bonus only | `pytest -m mobile` |
 | Manual login test only | `pytest tests/test_quotes_login.py --headed` |
 
