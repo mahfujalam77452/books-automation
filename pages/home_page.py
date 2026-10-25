@@ -12,6 +12,9 @@ class HomePage(BasePage):
         self.headings = page.locator("h1, h2, h3, h4, h5, h6")
         self.books_section = page.locator("ol.row")
         self.book_items = page.locator("article.product_pod")
+        self.product_images = page.locator("article.product_pod img")
+        self.next_button = page.locator("li.next a")
+        self.current_page_label = page.locator("li.current")
 
     def open_home(self) -> Response | None:
         """Open the homepage."""
@@ -55,3 +58,37 @@ class HomePage(BasePage):
     def click_book(self, index: int) -> None:
         """Click the book at the given position."""
         self.book_items.nth(index).locator("h3 a").click()
+
+    def get_unique_link_urls(self) -> list[str]:
+        """Return all unique http(s) link URLs on the page (fragments removed)."""
+        hrefs = self.page.locator("a").evaluate_all("els => els.map(e => e.href)")
+        urls = {href.split("#")[0] for href in hrefs if href.startswith("http")}
+        return sorted(urls)
+
+    def get_image_errors(self) -> list[str]:
+        """Check every product image and return a list of problems (empty = all good)."""
+        self.page.wait_for_load_state("load")
+        self.product_images.first.wait_for(state="visible")
+        errors = []
+        for i in range(self.product_images.count()):
+            image = self.product_images.nth(i)
+            name = f"image #{i + 1}"
+            if not image.is_visible():
+                errors.append(f"{name}: not visible")
+            if not (image.get_attribute("src") or "").strip():
+                errors.append(f"{name}: src is missing or empty")
+            if not (image.get_attribute("alt") or "").strip():
+                errors.append(f"{name}: alt is missing or empty")
+            if "thumbnail" not in (image.get_attribute("class") or "").split():
+                errors.append(f"{name}: class does not contain 'thumbnail'")
+            if not image.evaluate("el => el.complete && el.naturalWidth > 0"):
+                errors.append(f"{name}: image did not render")
+        return errors
+
+    def has_next_page(self) -> bool:
+        """Return True if a Next button exists."""
+        return self.next_button.count() > 0
+
+    def click_next(self) -> None:
+        """Click the Next button."""
+        self.next_button.click()

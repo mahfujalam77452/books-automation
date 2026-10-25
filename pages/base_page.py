@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from playwright.sync_api import Page, Response
+from playwright.sync_api import Error,Page, Response
 
 
 class BasePage:
@@ -22,6 +22,13 @@ class BasePage:
         """Go one step back in the browser history."""
         
         self.page.go_back(wait_until="domcontentloaded")
+
+    def get_status(self, url: str) -> int:
+        """Send a GET request and return the HTTP status (0 if the request fails)."""
+        try:
+            return self.page.request.get(url).status
+        except Error:
+            return 0
 
     @property
     def current_url(self) -> str:
