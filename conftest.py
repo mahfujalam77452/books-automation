@@ -26,3 +26,17 @@ def book_details_page(page: Page) -> BookDetailsPage:
 @pytest.fixture
 def quotes_login_page(page: Page) -> QuotesLoginPage:
     return QuotesLoginPage(page)
+
+@pytest.fixture
+def mobile_home_page(browser, playwright) -> HomePage:
+    """HomePage opened in an iPhone 12 emulated context."""
+    context = browser.new_context(**playwright.devices["iPhone 12"])
+    mobile_page = context.new_page()
+    mobile_page.set_default_timeout(settings.DEFAULT_TIMEOUT_MS)
+    mobile_page.set_default_navigation_timeout(settings.NAVIGATION_TIMEOUT_MS)
+    yield HomePage(mobile_page)
+    context.close()
+@pytest.fixture
+def book_details_page_for():
+    """Return a factory that builds a BookDetailsPage for any given page."""
+    return BookDetailsPage
