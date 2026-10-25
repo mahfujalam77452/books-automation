@@ -5,7 +5,7 @@ from playwright.sync_api import Page
 from config import settings
 from pages.book_details_page import BookDetailsPage
 from pages.home_page import HomePage
-
+from pages.quotes_login_page import QuotesLoginPage
 
 @pytest.fixture(autouse=True)
 def configure_timeouts(page: Page) -> None:
@@ -21,3 +21,8 @@ def home_page(page: Page) -> HomePage:
 @pytest.fixture
 def book_details_page(page: Page) -> BookDetailsPage:
     return BookDetailsPage(page)
+
+
+@pytest.fixture
+def quotes_login_page(page: Page) -> QuotesLoginPage:
+    return QuotesLoginPage(page)
